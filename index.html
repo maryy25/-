@@ -1,27 +1,352 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Neon Heart Animation</title>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>المنيو العالمي المتطور</title>
+    
+    <!-- مكتبة الأيقونات والخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;800&family=Playfair+Display:wght@700&family=Cairo:wght@900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Import map for three.js modules -->
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+    <style>
+        /* =========================================
+           1. إعدادات الثيمات (CSS Variables) - محرك التصميم
+           ========================================= */
+        :root {
+            /* القيم الافتراضية (الثيم 1: Modern Clean - مثل آبل) */
+            --bg-color: #f2f4f8;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #888888;
+            --accent-color: #007AFF; /* أزرق آيفون */
+            --accent-text: #ffffff;
+            --radius: 16px;
+            --shadow: 0 10px 40px rgba(0,0,0,0.08);
+            --font-main: 'Tajawal', sans-serif;
+            --border: none;
+            --header-blur: blur(20px);
         }
-      }
+
+        /* الثيم 2: Dark Luxury (مطاعم الستيك والقهوة الفاخرة) */
+        [data-theme="luxury"] {
+            --bg-color: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #aaaaaa;
+            --accent-color: #d4af37; /* ذهبي */
+            --accent-text: #000000;
+            --radius: 4px;
+            --shadow: 0 20px 50px rgba(0,0,0,0.5);
+            --font-main: 'Playfair Display', 'Tajawal', serif;
+            --border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        /* الثيم 3: Neon Pop (برجر، دونات، شبابي) */
+        [data-theme="pop"] {
+            --bg-color: #FFDE59; /* أصفر فاقع */
+            --card-bg: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #000000;
+            --accent-color: #FF3131; /* أحمر نيون */
+            --accent-text: #ffffff;
+            --radius: 0px; /* حواف حادة */
+            --shadow: 8px 8px 0px #000000; /* ظل صلب */
+            --font-main: 'Cairo', sans-serif;
+            --border: 3px solid #000000;
+        }
+
+        /* الثيم 4: Glassmorphism (عصائر، لاونج، تقني) */
+        [data-theme="glass"] {
+            --bg-color: #000000; /* سيتم وضع صورة خلفية عبر JS */
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --accent-color: rgba(255, 255, 255, 0.3);
+            --accent-text: #ffffff;
+            --radius: 24px;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --font-main: 'Tajawal', sans-serif;
+            --border: 1px solid rgba(255, 255, 255, 0.18);
+            --header-blur: blur(20px);
+        }
+        
+        /* الثيم 5: Minimalist (صحي، سوشي) */
+        [data-theme="minimal"] {
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #999999;
+            --accent-color: #2c3e50;
+            --accent-text: #ffffff;
+            --radius: 0px;
+            --shadow: none;
+            --font-main: 'Tajawal', sans-serif;
+            --border: 1px solid #eee;
+        }
+
+        /* =========================================
+           2. التنسيقات الأساسية (CSS Structure)
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            transition: 0.5s ease;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        /* خلفية خاصة لثيم الزجاج */
+        body[data-theme="glass"]::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, #ff00cc, #333399);
+            z-index: -1;
+        }
+
+        /* الهيدر */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            padding: 20px;
+            background: var(--card-bg);
+            backdrop-filter: var(--header-blur);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: var(--border);
+            transition: 0.5s;
+        }
+        [data-theme="pop"] header { border-bottom: 3px solid #000; }
+        [data-theme="glass"] header { background: rgba(0,0,0,0.3); }
+
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; }
+
+        /* أزرار التحكم بالثيم (للعرض فقط) */
+        .theme-switcher {
+            display: flex; gap: 10px;
+        }
+        .theme-btn {
+            width: 35px; height: 35px; border-radius: 50%; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; background: var(--card-bg); color: var(--text-primary);
+            box-shadow: var(--shadow); transition: 0.3s;
+        }
+        .theme-btn:hover { transform: scale(1.1); }
+
+        /* التصنيفات */
+        .categories {
+            display: flex; gap: 15px; padding: 20px;
+            overflow-x: auto; scrollbar-width: none;
+        }
+        .categories::-webkit-scrollbar { display: none; }
+        
+        .cat-pill {
+            padding: 10px 25px;
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            border-radius: 50px;
+            border: var(--border);
+            white-space: nowrap;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: var(--shadow);
+        }
+        [data-theme="pop"] .cat-pill { border-radius: 0; border: 2px solid #000; box-shadow: 4px 4px 0 #000; }
+        
+        .cat-pill.active {
+            background: var(--accent-color);
+            color: var(--accent-text);
+            transform: scale(1.05);
+        }
+
+        /* شبكة المنتجات */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: var(--border);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            animation: fadeIn 0.6s ease;
+        }
+        .card:hover { transform: translateY(-10px); }
+
+        .card-img {
+            width: 100%; height: 180px; object-fit: cover;
+        }
+        
+        .card-body { padding: 15px; }
+        .card-title { font-size: 1rem; margin-bottom: 5px; font-weight: bold; }
+        .card-desc { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 15px; }
+        
+        .card-footer {
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .price { font-size: 1.1rem; font-weight: 800; color: var(--accent-color); }
+        [data-theme="luxury"] .price { color: var(--accent-color); font-family: 'Playfair Display'; font-style: italic; }
+
+        .add-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%; border: none;
+            background: var(--accent-color); color: var(--accent-text);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+        [data-theme="pop"] .add-btn { border-radius: 0; border: 2px solid #000; box-shadow: 3px 3px 0 #000; }
+        .add-btn:active { transform: scale(0.9); }
+
+        /* شريط السلة */
+        .cart-bar {
+            position: fixed; bottom: 20px; left: 5%; width: 90%;
+            background: var(--accent-color);
+            color: var(--accent-text);
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(150%);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 500;
+            font-weight: bold;
+        }
+        [data-theme="pop"] .cart-bar { border-radius: 0; border: 3px solid #000; box-shadow: 6px 6px 0 #000; background: #000; color: #fff; }
+        .cart-bar.active { transform: translateY(0); }
+
+        /* تأثيرات الحركة */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body data-theme="default">
+
+    <!-- الهيدر مع مبدل الثيمات -->
+    <header>
+        <div class="logo">GOURMET<span style="color:var(--accent-color)">.</span></div>
+        <div class="theme-switcher">
+            <button class="theme-btn" onclick="setTheme('default')" title="مودرن"><i class="fas fa-mobile-alt"></i></button>
+            <button class="theme-btn" onclick="setTheme('luxury')" title="فاخر"><i class="fas fa-gem"></i></button>
+            <button class="theme-btn" onclick="setTheme('pop')" title="نيون"><i class="fas fa-bolt"></i></button>
+            <button class="theme-btn" onclick="setTheme('glass')" title="زجاجي"><i class="fas fa-magic"></i></button>
+            <button class="theme-btn" onclick="setTheme('minimal')" title="بسيط"><i class="fas fa-leaf"></i></button>
+        </div>
+    </header>
+
+    <!-- التصنيفات -->
+    <div class="categories">
+        <div class="cat-pill active" onclick="filter('all', this)">الكل</div>
+        <div class="cat-pill" onclick="filter('burger', this)">برجر</div>
+        <div class="cat-pill" onclick="filter('sushi', this)">سوشي</div>
+        <div class="cat-pill" onclick="filter('coffee', this)">قهوة</div>
+        <div class="cat-pill" onclick="filter('dessert', this)">حلى</div>
+    </div>
+
+    <!-- شبكة المنتجات -->
+    <div class="grid" id="grid">
+        <!-- سيتم توليد الكروت هنا بالجافاسكريبت -->
+    </div>
+
+    <!-- شريط السلة العائم -->
+    <div class="cart-bar" id="cartBar">
+        <div>
+            <span id="cartCount">0</span> وجبات
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span id="cartTotal">0</span> ر.س
+            <i class="fas fa-arrow-left"></i>
+        </div>
+    </div>
+
+    <script>
+        // === 1. قاعدة البيانات (Data) ===
+        const products = [
+            { id: 1, name: "ترفل برجر", price: 45, type: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400", desc: "لحم واغيو مع صوص الترفل" },
+            { id: 2, name: "سالمون رول", price: 60, type: "sushi", img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400", desc: "سوشي طازج مع الأفوكادو" },
+            { id: 3, name: "لاتيه إسباني", price: 22, type: "coffee", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400", desc: "قهوة مختصة ساخنة" },
+            { id: 4, name: "دبل تشيز", price: 38, type: "burger", img: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400", desc: "قطعتين لحم مع شيدر" },
+            { id: 5, name: "بان كيك", price: 28, type: "dessert", img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400", desc: "مع العسل والتوت البري" },
+            { id: 6, name: "ماتشا بارد", price: 25, type: "coffee", img: "https://images.unsplash.com/photo-1515442261605-65987783cb6a?w=400", desc: "شاي أخضر ياباني" },
+            { id: 7, name: "بوكس التجمع", price: 150, type: "burger", img: "https://images.unsplash.com/photo-1596662951482-0c4ba74a6df6?w=400", desc: "6 برجر مع بطاطس" },
+            { id: 8, name: "نيجيري تونا", price: 55, type: "sushi", img: "https://images.unsplash.com/photo-1553621042-f6e147245754?w=400", desc: "قطعتين تونا زرقاء" },
+        ];
+
+        // === 2. المحرك (Engine) ===
+        const grid = document.getElementById('grid');
+        let cart = [];
+
+        function renderProducts(filterType = 'all') {
+            grid.innerHTML = '';
+            
+            const filtered = filterType === 'all' 
+                ? products 
+                : products.filter(p => p.type === filterType);
+
+            filtered.forEach((p, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.animationDelay = `${index * 0.1}s`; // تأثير ظهور متتابع
+                card.innerHTML = `
+                    <div style="overflow:hidden;">
+                        <img src="${p.img}" class="card-img" alt="${p.name}">
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">${p.name}</h3>
+                        <p class="card-desc">${p.desc}</p>
+                        <div class="card-footer">
+                            <span class="price">${p.price} ر.س</span>
+                            <button class="add-btn" onclick="addToCart(${p.price})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // === 3. الوظائف (Functions) ===
+        
+        // تغيير الثيم
+        function setTheme(themeName) {
+            document.body.setAttribute('data-theme', themeName);
+        }
+
+        // فلترة المنتجات
+        function filter(type, element) {
+            document.querySelectorAll('.cat-pill').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            renderProducts(type);
+        }
+
+        // السلة
+        function addToCart(price) {
+            cart.push(price);
+            updateCart();
+            
+            // اهتزاز بسيط للجوال عند الإضافة
+            if(navigator.vibrate) navigator.vibrate(50);
+        }
+
+        function updateCart() {
+            const total = cart.reduce((a, b) => a + b, 0);
+            document.getElementById('cartCount').innerText = cart.length;
+            document.getElementById('cartTotal').innerText = total;
+            
+            const bar = document.getElementById('cartBar');
+            if (cart.length > 0) bar.classList.add('active');
+        }
+
+        // تشغيل مبدئي
+        renderProducts();
+
     </script>
-
-    <link rel="stylesheet" href="style.css" />
-  </head>
-
-  <body>
-    <div id="container"></div>
-    <div class="glow"></div>
-    <div id="controls"></div>
-
-    <script type="module" src="script.js"></script>
-  </body>
+</body>
 </html>
